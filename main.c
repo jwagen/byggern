@@ -13,30 +13,20 @@
 #include <stdio.h>
 
 #include "uart.h"
+#include "sram.h"
 
 
 
 int main(void)
 {
 	uart_init();
-
-	DDRA |= (1 << PA0);
-	PORTA &= !(1 << PA0);
-
-	
-	PORTA |= (1 << PA0);
-	
-	char buffer [20];
-	
-	printf("Ready\n");
-
-    while(1)
-    {
-		scanf("%s", buffer);
-		printf(buffer);
-		printf("\n");
-	
+	sram_init();
+	printf("Init done");
+	printf("Starting SRAM test");
+	sram_test();
+	printf("Finished SRAM test");
+	while(1){
 		
-    }
+	}
 	
 }
