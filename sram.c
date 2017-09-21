@@ -4,10 +4,10 @@
  * Created: 08.09.2017 12:18:27
  *  Author: mohamama
  */ 
+#include "sram.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <avr/io.h>
-#include "sram.h"
 
 void sram_init(void){
 	MCUCR |= (1<<SRE);

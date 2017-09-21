@@ -8,7 +8,8 @@
 #include <util/delay.h>
 #include <stdio.h>
 
-void uart_init(){
+
+void uart_init(void){
 
 	// Set baudrate to 9600
 
@@ -17,10 +18,9 @@ void uart_init(){
 	// Enable TX rx
 	UCSR1B = (1<<TXEN1)|(1<<RXEN1);	
 	
-	fdevopen(uart_transmit, uart_receive);
+	//fdevopen(uart_transmit, uart_receive);
 	
 }
-
 
 void uart_transmit(unsigned char data){
 	while ( !( UCSR1A & (1<<UDRE1)) );

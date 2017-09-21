@@ -5,8 +5,8 @@
 
 
 
-void uart_init();
-unsigned char uart_receive(void);
-void uart_transmit(unsigned char data);
+void uart_init(void);
+//unsigned char uart_receive(void);
+//void uart_transmit(unsigned char data);
 
 #endif

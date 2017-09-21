@@ -1,4 +1,5 @@
 /*
+ *
  * GccApplication1.c
  *
  * Created: 01.09.2017 09:56:39
@@ -12,15 +13,15 @@
 #include <util/delay.h>
 #include <stdio.h>
 
-#include "uart.h"
 #include "sram.h"
+#include "uart.h"
 
 
 
-int main(void)
+int main()
 {
-	uart_init();
 	sram_init();
+	uart_init();
 	printf("Init done");
 	printf("Starting SRAM test");
 	sram_test();

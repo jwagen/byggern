@@ -10,7 +10,7 @@
 #define DEFINES_H_
 
 
-#define F_CPU 4915200
+//#define F_CPU 4915200
 
 
 #endif /* DEFINES_H_ */
