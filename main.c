@@ -40,13 +40,15 @@ int main(void)
 	printf("Init done\n");
 	
 
-	menu_display(MenuMain);
+
 
 	while(1){
 		
-		
-		char c[10];
- 		fscanf(&uart_str, "%c", c);
+	uint8_t s = menu_handle_input(&MenuMain);
+	
+	printf("%d", s);
+		//char c[10];
+ 		//fscanf(&uart_str, "%c", c);
 // 		
 // 
 // 		fprintf(&oled_str,"%s", c);

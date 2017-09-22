@@ -25,11 +25,11 @@ typedef struct menu{
 
 
 
-const Menu MenuMain;
+ Menu MenuMain;
 
 
 uint8_t menu_display(Menu menu);
-void menu_handle_input(MenuMain *menu);
+uint8_t menu_handle_input(Menu *menu);
 
 
 

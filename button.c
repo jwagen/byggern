@@ -10,6 +10,8 @@
 
 #include "button.h"
 
+#define BUTTON_NUMBER 3
+
 void button_init(void){
 	DDRD &= ~((1<<PD1) | (1<<PD0));	//Set touch buttons as input
 	
@@ -38,7 +40,7 @@ uint8_t button_read(buttons_t button){
 }
 
 button_states_t button_read_state(buttons_t button){
-	static button_states_t current_state[2];
+	static button_states_t current_state[BUTTON_NUMBER];
 	uint8_t reading = button_read(button);
 	
 	if(reading && current_state[button] == LOW){
