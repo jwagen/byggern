@@ -11,8 +11,11 @@
 #include "button.h"
 
 void button_init(void){
-	//Set buttons as input
-	DDRD &= ~((1<<PD1) | (1<<PD0));
+	DDRD &= ~((1<<PD1) | (1<<PD0));	//Set touch buttons as input
+	
+	DDRE &= ~((1<<PE0));			//Set joystick button as input
+	PORTE |= (1<<PE0);				//Enable pullup
+	
 }
 
 uint8_t button_read(buttons_t button){
@@ -26,5 +29,34 @@ uint8_t button_read(buttons_t button){
 		
 	}
 	
+	else if (button == JOYSTICK_BUTTON){
+		reading = !(PINE & (1<<PINE0));
+		
+	}
+	
 	return reading;
+}
+
+button_states_t button_read_state(buttons_t button){
+	static button_states_t current_state[2];
+	uint8_t reading = button_read(button);
+	
+	if(reading && current_state[button] == LOW){
+		current_state[button] = RISING;
+	}
+	
+	else if(reading && current_state[button] == HIGH){
+		current_state[button] = HIGH;
+	}
+	
+	else if(!reading && current_state[button] == HIGH){
+		current_state[button] = FALLING;
+	}
+	
+	else if(!reading && current_state[button] == LOW){
+		current_state[button] = LOW;
+	}
+	
+	
+	return current_state[button];
 }
