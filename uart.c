@@ -8,8 +8,19 @@
 #include <util/delay.h>
 #include <stdio.h>
 
+void uart_transmit(unsigned char data){
+	while ( !( UCSR1A & (1<<UDRE1)) );
+	
+	UDR1 = data;
+}
 
-void uart_init(void){
+//Function to receive data
+unsigned char uart_receive(void){
+	while (!(UCSR1A & (1<<RXC1)));
+	return UDR1;
+}
+
+void uart_init(){
 
 	// Set baudrate to 9600
 
@@ -22,15 +33,6 @@ void uart_init(void){
 	
 }
 
-void uart_transmit(unsigned char data){
-	while ( !( UCSR1A & (1<<UDRE1)) );
-	
-	UDR1 = data;
-}
 
-//Function to receive data
-unsigned char uart_receive(void){
-	while (!(UCSR1A & (1<<RXC1)));
-	return UDR1;
-}
+
 
