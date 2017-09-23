@@ -34,6 +34,10 @@ OBJDUMP = avr-objdump
 AVRSIZE = avr-size
 AVRDUDE = avrdude
 
+BUILDDIR = build
+SOURCEDIR = src
+HEADERDIR = include
+
 ##########------------------------------------------------------##########
 ##########                   Makefile Magic!                    ##########
 ##########         Summary:                                     ##########
@@ -46,17 +50,17 @@ AVRDUDE = avrdude
 ## The name of your project (without the .c)
 # TARGET = blinkLED
 ## Or name it automatically after the enclosing directory
-TARGET = $(lastword $(subst /, ,$(CURDIR)))
+TARGET = $(BUILDDIR)/$(lastword $(subst /, ,$(CURDIR)))
 
 # Object files: will find all .c/.h files in current directory
 #  and in LIBDIR.  If you have any other (sub-)directories with code,
 #  you can add them in to SOURCES below in the wildcard statement.
-SOURCES=$(wildcard *.c	)
-OBJECTS=$(SOURCES:.c=.o)
-HEADERS=$(SOURCES:.c=.h)
+SOURCES = $(wildcard $(SOURCEDIR)/*.c	)
+HEADERS = $(wildcard $(HEADERDIR)/*.h	)
+OBJECTS = $(patsubst $(SOURCEDIR)/%.c, $(BUILDDIR)/%.o, $(SOURCES))
 
 ## Compilation options, type man avr-gcc if you're curious.
-CPPFLAGS = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I. 
+CPPFLAGS = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I $(HEADERDIR)
 CFLAGS = -Os -g -std=gnu99 -Wall
 ## Use short (8-bit) data types 
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
@@ -73,19 +77,19 @@ TARGET_ARCH = -mmcu=$(MCU)
 
 ## Explicit pattern rules:
 ##  To make .o files from .c files 
-%.o: %.c $(HEADERS) Makefile
+$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c $(HEADERS)  Makefile
 	 $(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<;
 
 $(TARGET).elf: $(OBJECTS)
 	$(CC) $(LDFLAGS) $(TARGET_ARCH) $^ $(LDLIBS) -o $@
 
-%.hex: %.elf
+$(BUILDDIR)/%.hex: %.elf
 	 $(OBJCOPY) -j .text -j .data -O ihex $< $@
 
-%.eeprom: %.elf
+$(BUILDDIR)/%.eeprom: %.elf
 	$(OBJCOPY) -j .eeprom --change-section-lma .eeprom=0 -O ihex $< $@ 
 
-%.lst: %.elf
+$(BUILDDIR)/%.lst: %.elf
 	$(OBJDUMP) -S $< > $@
 
 ## These targets don't have files named after them
@@ -112,13 +116,8 @@ size:  $(TARGET).elf
 	$(AVRSIZE) -C --mcu=$(MCU) $(TARGET).elf
 
 clean:
-	rm -f $(TARGET).elf $(TARGET).hex $(TARGET).obj \
-	$(TARGET).o $(TARGET).d $(TARGET).eep $(TARGET).lst \
-	$(TARGET).lss $(TARGET).sym $(TARGET).map $(TARGET)~ \
-	$(TARGET).eeprom
+	rm -f build/*
 
-squeaky_clean:
-	rm -f *.elf *.hex *.obj *.o *.d *.eep *.lst *.lss *.sym *.map *~ *.eeprom
 
 ##########------------------------------------------------------##########
 ##########              Programmer-specific details             ##########
@@ -193,3 +192,5 @@ set_eeprom_save_fuse: fuses
 ## Clear the EESAVE fuse byte
 clear_eeprom_save_fuse: FUSE_STRING = -U hfuse:w:$(HFUSE):m
 clear_eeprom_save_fuse: fuses
+
+print-%  : ; @echo $* = $($*)

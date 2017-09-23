@@ -7,7 +7,7 @@
 
 #include "joystick.h"
 #include "adc.h"
-#include <math.h>
+#include <stdlib.h>
 
 
 #define JOYSTICK_X_ADC_CHANNEL 2
