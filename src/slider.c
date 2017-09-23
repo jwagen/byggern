@@ -13,6 +13,8 @@
 #define SLIDER_L_ADC_CHANNEL 4
 #define SLIDER_R_ADC_CHANNEL 3
 
+
+
 void slider_init(void){
 	
 }
