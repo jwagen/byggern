@@ -20,6 +20,7 @@
 #include "oled.h"
 #include "adc.h"
 #include "menu.h"
+#include "can.h"
 
 
 
@@ -32,6 +33,7 @@ int main(void)
 	button_init();
 	oled_init();
 	uart_init();
+	can_init();
 	
 	
 
@@ -41,28 +43,24 @@ int main(void)
 	
 
 
-
-	while(1){
-		
-	uint8_t s = menu_handle_input(&MenuMain);
+	can_message_t m = {
+		.data[0] = 1,
+		.length = 1,
+		.id = 1,
+			
+		};
+	uint8_t i = 0;
 	
-	printf("%d", s);
-		//char c[10];
- 		//fscanf(&uart_str, "%c", c);
-// 		
-// 
-// 		fprintf(&oled_str,"%s", c);
-// 		fprintf(&uart_str,"%s", c);
-
-// 		fprintf(&oled_str,"Helasdegsdf\n asdfasdf \n \n sdfsjdlkf \n asd");
-// 		
-// 		printf("HEDzsdfzsdfF\n");
-// 
-// 
-// 			
-// 		_delay_ms(100);
-
+	while(1){
+		m.data[0] = i;
+		can_transmit(m);
+		_delay_ms(100);
 		
+		can_message_t r = can_recive();
+		printf("Sendt message = %d\n", m.data[0]);
+		printf("Recivede data = %d\n", r.data[0]);
+		//printf("Test");
+		i++;
 	}
 	
 }
