@@ -41,6 +41,7 @@ C_SRCS +=  \
 ../can.c \
 ../main.c \
 ../mcp2515.c \
+../servo.c \
 ../spi.c \
 ../uart.c
 
@@ -56,6 +57,7 @@ adc.o \
 can.o \
 main.o \
 mcp2515.o \
+servo.o \
 spi.o \
 uart.o
 
@@ -64,6 +66,7 @@ adc.o \
 can.o \
 main.o \
 mcp2515.o \
+servo.o \
 spi.o \
 uart.o
 
@@ -72,6 +75,7 @@ adc.d \
 can.d \
 main.d \
 mcp2515.d \
+servo.d \
 spi.d \
 uart.d
 
@@ -80,6 +84,7 @@ adc.d \
 can.d \
 main.d \
 mcp2515.d \
+servo.d \
 spi.d \
 uart.d
 
@@ -119,6 +124,13 @@ LINKER_SCRIPT_DEP+=
 	
 
 ./mcp2515.o: .././mcp2515.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./servo.o: .././servo.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

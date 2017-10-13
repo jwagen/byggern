@@ -131,6 +131,9 @@
     <Compile Include="can.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="can_id.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="defines.h">
       <SubType>compile</SubType>
     </Compile>

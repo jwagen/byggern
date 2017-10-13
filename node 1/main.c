@@ -45,17 +45,10 @@ int main(void)
 	
 
 
-	can_message_t m = {
-		.data[0] = 1,
-		.length = 1,
-		.id = 1,
-			
-		};
-	uint8_t i = 0;
 	
 	while(1){
 
-		_delay_ms(100);
+		_delay_ms(200);
 		
 		can_message_t r = can_recive();
 		node2_send_requested_data(r);

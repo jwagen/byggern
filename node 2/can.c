@@ -10,6 +10,7 @@
 #include "can.h"
 #include "mcp2515.h"
 #include "mcp2515_registers.h"
+#include <stdio.h>
 
 
 void can_init(){
@@ -43,24 +44,25 @@ void can_transmit(can_message_t message){
 	
 }
 
-can_message_t can_recive(){
-	can_message_t message;
+void can_recive(can_message_t *message){
 	//Read id
-	message.id = mcp2515_read(RXB0SIDH) << 3;
-	message.id |= (7 & (mcp2515_read(RXB0SIDL) >> 5)) ;
+	message->id = mcp2515_read(RXB0SIDH) << 3;
+	message->id |= (7 & (mcp2515_read(RXB0SIDL) >> 5)) ;
+	
+	printf("Can function\n");
 	
 	//Read length
-	message.length = 0x0f & mcp2515_read(RXB0DLC);
+	message->length = 0x0f & mcp2515_read(RXB0DLC);
 	
 	//Read data
-	for (uint8_t i = 0; i < message.length; i++){
-		message.data[i] = mcp2515_read(RXB0D0+i);
+	for (uint8_t i = 0; i < message->length; i++){
+		message->data[i] = mcp2515_read(RXB0D0+i);
 	}
 	
 	//Clear interrupt flags
 	mcp2515_write(CANINTF, 0x00);
 	
-	return message;
+/*	return message;*/
 	
 	
 }

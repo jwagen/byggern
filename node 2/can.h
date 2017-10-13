@@ -22,7 +22,7 @@ void can_init();
 
 void can_transmit(can_message_t);
 
-can_message_t can_recive();
+void can_recive(can_message_t*);
 
 
 

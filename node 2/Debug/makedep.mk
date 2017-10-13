@@ -10,6 +10,8 @@ main.c
 
 mcp2515.c
 
+servo.c
+
 spi.c
 
 uart.c

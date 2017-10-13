@@ -9,12 +9,9 @@
 #include "can.h"
 #include "joystick.h"
 #include "uart.h"
+#include "can_id.h"
 
-//ID of different messages
-// typedef enum {
-// 	NODE2_JOYSTICK = 1
-// } node2_message_id;#define REQUEST_JOYSTICK_POS 1
-#define SENDT_JOYSTICK_POS 2
+
 
 
 
