@@ -37,6 +37,8 @@ int main(void)
 	
 	uint8_t s = 1;
 	while(1){
+// 		printf("Test\n");
+// 		_delay_ms(100);
 		
 // 		for (s = 0; s < 255; s++){
 // 			servo_set_pos(s);
@@ -48,25 +50,25 @@ int main(void)
 // 			_delay_ms(40);
 // 		}
 			
-// 		can_transmit(joystick_request);
-// 		printf("Sent message id = %d  | ", joystick_request.id);
+		can_transmit(joystick_request);
+		printf("Sent message id = %d  | ", joystick_request.id);
+		
+		
+		
+		joystick_request.id++;
+		if (joystick_request.id > 2000){
+			joystick_request.id = 0;
+		}
+		
+ 		printf("Error message = %02x | ", mcp2515_read(EFLG));
+ 		printf("Receive error counter = %02x | ", mcp2515_read(REC));
+ 		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
 // 		
 // 		
-// 		
-// 		joystick_request.id++;
-// 		if (joystick_request.id > 2000){
-// 			joystick_request.id = 0;
-// 		}
-// 		
-//  		printf("Error message = %02x | ", mcp2515_read(EFLG));
-//  		printf("Receive error counter = %02x | ", mcp2515_read(REC));
-//  		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
-// // 		
-// // 		
-// 
-// 		printf("Can available = %d | ", can_message_available());
-// 		printf("INT2 status = %d | ", !!(PIND & (1<<PD2)));
-// 		//Interupt does not work, Can transceiver does not toggle int pin
+
+		printf("Can available = %d | ", can_message_available());
+		printf("INT2 status = %d | ", !!(PIND & (1<<PD2)));
+		//Interupt does not work, Can transceiver does not toggle int pin
 
  		printf("Error message = %02x | ", mcp2515_read(EFLG));
  		printf("Receive error counter = %02x | ", mcp2515_read(REC));

@@ -11,7 +11,7 @@ extern FILE uart_str;
 
 void uart_init();
 unsigned char uart_receive(FILE *stream);
-void uart_transmit(unsigned char data, FILE *stream);
+uint8_t uart_transmit(unsigned char data, FILE *stream);
 
 
 
