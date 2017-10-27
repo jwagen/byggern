@@ -12,7 +12,7 @@
 
 void adc_init(void);
 
-uint8_t adc_read(uint8_t channel);
+uint16_t adc_read(uint8_t channel);
 
 
 

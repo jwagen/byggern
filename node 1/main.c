@@ -22,6 +22,7 @@
 #include "adc.h"
 #include "menu.h"
 #include "can.h"
+#include "can_id.h"
 #include "node2.h"
 #include "mcp2515.h"
 #include "mcp2515_registers.h"
@@ -46,7 +47,7 @@ int main(void)
 
 	printf("Init done\n");
 	
-	can_message_t joystick_request;
+	can_message_t joystick_message;
 	can_message_t r;
 
 
@@ -59,31 +60,34 @@ int main(void)
 // 		
 // 		can_transmit(joystick_request);
 // 		printf("Sent message id = %d  | ", joystick_request.id);
+
+		
+// 		printf("Error message = %02x | ", mcp2515_read(EFLG));
+// 		printf("Receive error counter = %02x | ", mcp2515_read(REC));
+// 		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
 // 		
-// 		
-// 		joystick_request.id++;
-// 		if (joystick_request.id > 2000){
-// 			joystick_request.id = 0;
+		
+		
+// 		if(can_message_available()){
+// 			can_recive(&r);
+// 			printf("Received id = %d \n ", r.id);
+// 			
 // 		}
+// 		
+// 		else {
+// 			printf("No new message\n");
+// 		}
+// 		
+// 		printf("\n");
+
+		joystick_pos_t pos = joystick_read();
+		joystick_message.length = 1;
+		joystick_message.data[0] = pos.x;
+		joystick_message.id = CAN_SENDT_JOYSTICK_POS;
 		
-		printf("Error message = %02x | ", mcp2515_read(EFLG));
-		printf("Receive error counter = %02x | ", mcp2515_read(REC));
-		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
-		
-		
-		can_recive(&r);
-		printf("Received id = %d \n ", r.id);
-		if(can_message_available()){
-			can_recive(&r);
-			printf("Received id = %d \n ", r.id);
-			
-		}
-		
-		else {
-			printf("No new message\n");
-		}
-		
-		
+		can_transmit(joystick_message);
+		printf("Sent message id = %d  | ", joystick_message.id);
+		printf("Joystick pos: x=%d, y=%d | \n", pos.x, pos.y);
 		
 		_delay_ms(200);
 		

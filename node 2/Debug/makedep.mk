@@ -6,6 +6,8 @@ adc.c
 
 can.c
 
+board.c
+
 main.c
 
 mcp2515.c

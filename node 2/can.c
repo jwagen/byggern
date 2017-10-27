@@ -29,14 +29,18 @@ void can_init(){
 	mcp2515_reset();
 	
 	
-	//Enable interrupt on received message in both buffers
-	mcp2515_write(CANINTE, (1 <<RX1IE) | (1<<RX0IE));
+	
 	
 	//Receive every message, no filter
-// 	mcp2515_write(RXB0CTRL, RXB_RXM1 | RXB_RXM0);
+ 	mcp2515_write(RXB0CTRL, RXB_RXM1 | RXB_RXM0);
+	 
+	 //Enable interrupt on received message in both buffers
+	 mcp2515_write(CANINTE, 0x03);
 // 	
 	//Set mode to normal operation
 	mcp2515_write(CANCTRL,MODE_NORMAL);
+	
+
 	
 	//Enable interrupt on falling edge of INT2, PD2, pin 19 on arduino
 	EICRA |= (1<<ISC21); 
@@ -78,7 +82,11 @@ void can_recive(can_message_t *message){
 	}
 	
 	//Clear interrupt flags
-	mcp2515_write(CANINTF, 0x00);
+
+	//Has to be written twise to work
+	mcp2515_bit_modify(CANINTF, 0x01, 0x00);
+	mcp2515_bit_modify(CANINTF, 0x01, 0x00);
+	printf("Can interrupt flags = %02x | ", mcp2515_read(CANINTF));
 	can_message_available_var = 0;	
 /*	return message;*/
 	

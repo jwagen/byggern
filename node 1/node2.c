@@ -23,14 +23,14 @@ void node2_init(){
 void node2_send_requested_data(can_message_t message){
 	
 	can_message_t send_message;
-	if (message.id == REQUEST_JOYSTICK_POS){
+	if (message.id == CAN_REQUEST_JOYSTICK_POS){
 		joystick_pos_t  pos = joystick_read();
 		printf("Joystick pos : x = %d, y = %d\n", pos.x, pos.y);
 		send_message.data[0] = pos.x;
 		send_message.data[1] = pos.y;
 		
 		send_message.length = 2;
-		send_message.id = SENDT_JOYSTICK_POS;
+		send_message.id = CAN_SENDT_JOYSTICK_POS;
 		
 		printf("Sent message id = %d  ", send_message.id);
 		printf("Sent message data = %d  ", send_message.data[0]);
