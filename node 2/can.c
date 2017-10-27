@@ -6,22 +6,41 @@
  */ 
 
 #include <stdint.h>
+#include <avr/interrupt.h>
+#include <avr/io.h>
 
 #include "can.h"
 #include "mcp2515.h"
 #include "mcp2515_registers.h"
 #include <stdio.h>
 
+static uint8_t can_message_available_var = 0;
+
+ISR(INT2_vect){
+	can_message_available_var = 1;
+}
+
+uint8_t can_message_available(){
+	return can_message_available_var;
+}
 
 void can_init(){
 	mcp2515_init();
+	mcp2515_reset();
 	
 	
 	//Enable interrupt on received message in both buffers
 	mcp2515_write(CANINTE, (1 <<RX1IE) | (1<<RX0IE));
 	
+	//Receive every message, no filter
+// 	mcp2515_write(RXB0CTRL, RXB_RXM1 | RXB_RXM0);
+// 	
 	//Set mode to normal operation
 	mcp2515_write(CANCTRL,MODE_NORMAL);
+	
+	//Enable interrupt on falling edge of INT2, PD2, pin 19 on arduino
+	EICRA |= (1<<ISC21); 
+	EIMSK |= (1<<INT2);
 }
 
 void can_transmit(can_message_t message){
@@ -48,8 +67,7 @@ void can_recive(can_message_t *message){
 	//Read id
 	message->id = mcp2515_read(RXB0SIDH) << 3;
 	message->id |= (7 & (mcp2515_read(RXB0SIDL) >> 5)) ;
-	
-	printf("Can function\n");
+
 	
 	//Read length
 	message->length = 0x0f & mcp2515_read(RXB0DLC);
@@ -61,7 +79,7 @@ void can_recive(can_message_t *message){
 	
 	//Clear interrupt flags
 	mcp2515_write(CANINTF, 0x00);
-	
+	can_message_available_var = 0;	
 /*	return message;*/
 	
 	

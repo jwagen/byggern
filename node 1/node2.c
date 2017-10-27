@@ -21,9 +21,6 @@ void node2_init(){
 
 //Sends data requested by node 2
 void node2_send_requested_data(can_message_t message){
-	printf("Received id = %d ", message.id);
-	//printf("Received data = %d ", message.data[0]);
-	//printf("Received data = %d\n", message.data[1]);
 	
 	can_message_t send_message;
 	if (message.id == REQUEST_JOYSTICK_POS){

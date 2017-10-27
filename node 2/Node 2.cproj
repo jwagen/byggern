@@ -47,7 +47,7 @@
         <InterfaceName>ISP</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J41800003136</ToolNumber>
+      <ToolNumber>J41800028867</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterface>ISP</avrtoolinterface>

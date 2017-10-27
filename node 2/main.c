@@ -7,12 +7,10 @@
 #include "spi.h"
 #include "servo.h"
 #include "can_id.h"
+#include "mcp2515.h"
+#include "mcp2515_registers.h"
 
 #include <avr/interrupt.h>
-ISR(BADISR_vect)
-{
-	printf("Inn interupt\n");
-}
 
 
 
@@ -23,50 +21,49 @@ int main(void)
 	can_init();
 	servo_init();
 
-	printf("Init doneeuhinoheunstihsnoteuhi osnethuisntoheuitnsh oosnteuhisn otehui sotehusni thosenuthi osenuthi %d %d %d\n", 1, 2, 3);
-	
-	
-	can_message_t joystick_request = {
-		.data[0] = 0,
-		.length = 0,
-		.id = 1,
+	sei();
 
-	};
-	servo_set_pos(128);
+
+	printf("Init done\n");
 	
-	can_message_t r;
+	can_message_t joystick_request;
+	can_message_t r = {.id = 0};
+
+
 	
-	cli();
 	
-	while(1){
-	
-		
+	while(1){	
 		can_transmit(joystick_request);
-		printf("Sent message id = %d  ", joystick_request.id);
-
-		can_recive(&r);
+		printf("Sent message id = %d  | ", joystick_request.id);
 		
-		if (r.id == CAN_SENDT_JOYSTICK_POS){
-			servo_set_pos((int8_t)r.data[0] + 127);
+		
+		
+		joystick_request.id++;
+		if (joystick_request.id > 2000){
+			joystick_request.id = 0;
+		}
+		
+		printf("Error message = %02x | ", mcp2515_read(EFLG));
+		printf("Receive error counter = %02x | ", mcp2515_read(REC));
+		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
+		
+		
+		if(can_message_available()){
+			can_recive(&r);
+			printf("Received id = %d \n ", r.id);
 			
 		}
 		
-
-
-		printf("Received id = %d ", 5);
-		printf("Received x pos = %d ", (int8_t)r.data[0]);
-		printf("Received y pos = %d  ", (int8_t)r.data[1]);
-		printf("Received length = %d\n", 2);
-		printf("Received length1 = %d\n", 3);
-
-		_delay_ms(1000);
-
+		else {
+			printf("No new message\n");
+		}
 		
 		
+		_delay_ms(200);
+		
+
+
 	}
-
-
-
 
 	
 }
