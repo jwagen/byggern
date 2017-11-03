@@ -81,15 +81,16 @@ int main(void)
 // 		printf("\n");
 
 		joystick_pos_t pos = joystick_read();
-		joystick_message.length = 1;
+		joystick_message.length = 2;
 		joystick_message.data[0] = pos.x;
+		joystick_message.data[1] = pos.y;
 		joystick_message.id = CAN_SENDT_JOYSTICK_POS;
 		
 		can_transmit(joystick_message);
 		printf("Sent message id = %d  | ", joystick_message.id);
 		printf("Joystick pos: x=%d, y=%d | \n", pos.x, pos.y);
 		
-		_delay_ms(200);
+		_delay_ms(20);
 		
 	}
 	

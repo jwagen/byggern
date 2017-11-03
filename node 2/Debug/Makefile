@@ -40,10 +40,13 @@ C_SRCS +=  \
 ../adc.c \
 ../can.c \
 ../board.c \
+../dac.c \
 ../main.c \
 ../mcp2515.c \
+../motor.c \
 ../servo.c \
 ../spi.c \
+../TWI_Master.c \
 ../uart.c
 
 
@@ -57,40 +60,52 @@ OBJS +=  \
 adc.o \
 can.o \
 board.o \
+dac.o \
 main.o \
 mcp2515.o \
+motor.o \
 servo.o \
 spi.o \
+TWI_Master.o \
 uart.o
 
 OBJS_AS_ARGS +=  \
 adc.o \
 can.o \
 board.o \
+dac.o \
 main.o \
 mcp2515.o \
+motor.o \
 servo.o \
 spi.o \
+TWI_Master.o \
 uart.o
 
 C_DEPS +=  \
 adc.d \
 can.d \
 board.d \
+dac.d \
 main.d \
 mcp2515.d \
+motor.d \
 servo.d \
 spi.d \
+TWI_Master.d \
 uart.d
 
 C_DEPS_AS_ARGS +=  \
 adc.d \
 can.d \
 board.d \
+dac.d \
 main.d \
 mcp2515.d \
+motor.d \
 servo.d \
 spi.d \
+TWI_Master.d \
 uart.d
 
 OUTPUT_FILE_PATH +=Node\ 2.elf
@@ -128,6 +143,13 @@ LINKER_SCRIPT_DEP+=
 	@echo Finished building: $<
 	
 
+./dac.o: .././dac.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 ./main.o: .././main.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
@@ -142,6 +164,13 @@ LINKER_SCRIPT_DEP+=
 	@echo Finished building: $<
 	
 
+./motor.o: .././motor.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
 ./servo.o: .././servo.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
@@ -150,6 +179,13 @@ LINKER_SCRIPT_DEP+=
 	
 
 ./spi.o: .././spi.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./TWI_Master.o: .././TWI_Master.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=16000000  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g2 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
