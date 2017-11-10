@@ -36,7 +36,7 @@ void can_init(){
 	 
 	 //Enable interrupt on received message in both buffers
 	 mcp2515_write(CANINTE, 0x03);
-// 	
+ 	
 	//Set mode to normal operation
 	mcp2515_write(CANCTRL,MODE_NORMAL);
 	

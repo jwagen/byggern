@@ -28,10 +28,11 @@
 #define MOTOR_SEL_PIN PH3
 #define MOTOR_DIR_PIN PH1
 
+#define MOTOR_POS_MAX 4000
+#define MOTOR_8INT_TO_POS (uint16_t) MOTOR_POS_MAX / 127 
 
-
-volatile uint16_t motor_pid_kp = 10;
-volatile uint16_t motor_pid_ki = 5;
+volatile uint16_t motor_pid_kp = 3;
+volatile uint16_t motor_pid_ki = 3;
 
 volatile int16_t motor_pid_setpoint = 0;
 volatile int16_t motor_pid_curr_pos = 0;
@@ -42,25 +43,63 @@ volatile int16_t motor_pid_error = 0;
 
 volatile int16_t motor_pid_output = 0;
 
+//Runs every 20ms. Uses same timer as the servo
 ISR(TIMER1_OVF_vect){
-	motor_pid_curr_pos += motor_get_encoder();
+	// Range form about -4000 to +4000
+	//Negative is left side of board. Encoder counts the other way.
+	motor_pid_curr_pos += -motor_get_encoder();
+	
+	//Limit values to allowable range
+	if(motor_pid_curr_pos < - MOTOR_POS_MAX){
+		motor_pid_curr_pos = - MOTOR_POS_MAX;
+	}
+	
+	else if(motor_pid_curr_pos > MOTOR_POS_MAX){
+		motor_pid_curr_pos = MOTOR_POS_MAX;
+	}
+	
 	motor_pid_error = motor_pid_setpoint - motor_pid_curr_pos;
 	
-	motor_pid_errorsum += motor_pid_error;
+	//Reduce gain on the I by a factor of 32
+	motor_pid_errorsum += (motor_pid_error / 32);
+	
+	//Limit values to allowable range
+	if(motor_pid_errorsum < - MOTOR_POS_MAX ){
+		motor_pid_curr_pos = - MOTOR_POS_MAX;
+	}
+	
+	else if(motor_pid_errorsum > MOTOR_POS_MAX){
+		motor_pid_errorsum = MOTOR_POS_MAX;
+	}
 	
 	motor_pid_output = (motor_pid_kp * motor_pid_error) + (motor_pid_ki * motor_pid_errorsum);
 	
-	motor_pid_output = motor_pid_output / 32;
+	motor_pid_output = motor_pid_output / 64;
+	
+	
 	
 	if(motor_pid_output < 0){
  		motor_set_direction(0);
-		motor_set_speed((uint8_t)(-motor_pid_output));
+		 //Invert output so it is always positive
+		 motor_pid_output = -motor_pid_output;
+		 
+		 //Limit output to max adc output
+		 if (motor_pid_output >  255){
+			 motor_pid_output = 255;
+		 }
+		uint16_t output = motor_pid_output; 
+		motor_set_speed(output);
 		
 	}
 	
 	else {
 		motor_set_direction(1);
-		motor_set_speed((uint8_t)motor_pid_output);
+		//Limit output to max adc output
+		if (motor_pid_output >  255){
+			motor_pid_output = 255;
+		}
+		uint16_t output = motor_pid_output;
+		motor_set_speed(output);
 	}
 
 		
@@ -145,5 +184,5 @@ int16_t motor_get_encoder(void){
 }
 
 void motor_set_pos(int8_t pos){
-	motor_pid_setpoint = pos;
+	motor_pid_setpoint = pos * 32;
 }

@@ -15,7 +15,7 @@
 
 #define JOYSTICK_X_ADC_CHANNEL 2
 #define JOYSTICK_Y_ADC_CHANNEL 1
-#define NEUTRAL_RANGE 4
+#define NEUTRAL_RANGE 40
 
 static joystick_pos_t offset = {0, 0};
 

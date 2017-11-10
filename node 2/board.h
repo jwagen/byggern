@@ -15,6 +15,10 @@ void board_init();
 uint8_t board_get_ball_status();
 
 
+	void board_solenoid_trigger() ;
+
+
+
 
 
 

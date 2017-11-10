@@ -42,6 +42,7 @@ C_SRCS +=  \
 ../adc.c \
 ../button.c \
 ../can.c \
+../game.c \
 ../joystick.c \
 ../main.c \
 ../mcp2515.c \
@@ -64,6 +65,7 @@ OBJS +=  \
 adc.o \
 button.o \
 can.o \
+game.o \
 joystick.o \
 main.o \
 mcp2515.o \
@@ -79,6 +81,7 @@ OBJS_AS_ARGS +=  \
 adc.o \
 button.o \
 can.o \
+game.o \
 joystick.o \
 main.o \
 mcp2515.o \
@@ -94,6 +97,7 @@ C_DEPS +=  \
 adc.d \
 button.d \
 can.d \
+game.d \
 joystick.d \
 main.d \
 mcp2515.d \
@@ -109,6 +113,7 @@ C_DEPS_AS_ARGS +=  \
 adc.d \
 button.d \
 can.d \
+game.d \
 joystick.d \
 main.d \
 mcp2515.d \
@@ -149,6 +154,13 @@ LINKER_SCRIPT_DEP+=
 	
 
 ./can.o: .././can.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=4915200  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega162 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./game.o: .././game.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.8.1
 	$(QUOTE)C:\Program Files (x86)\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG -DF_CPU=4915200  -O1 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atmega162 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

@@ -26,13 +26,14 @@
 #include "node2.h"
 #include "mcp2515.h"
 #include "mcp2515_registers.h"
+#include "game.h"
 
 
 
 
 int main(void)
 {
-	
+	//Init systems
 	sram_init();
 	adc_init();
 	button_init();
@@ -46,51 +47,12 @@ int main(void)
 
 
 	printf("Init done\n");
-	
-	can_message_t joystick_message;
-	can_message_t r;
 
-
-	
-	
 	while(1){
-// 
-// 		printf("Can available = %d ", can_message_available());
-// 		printf("INT2 status = %d | ", !!(PIND & (1<<PD3)));
-// 		
-// 		can_transmit(joystick_request);
-// 		printf("Sent message id = %d  | ", joystick_request.id);
 
-		
-// 		printf("Error message = %02x | ", mcp2515_read(EFLG));
-// 		printf("Receive error counter = %02x | ", mcp2515_read(REC));
-// 		printf("Transmit error counter = %02x | ", mcp2515_read(TEC));
-// 		
-		
-		
-// 		if(can_message_available()){
-// 			can_recive(&r);
-// 			printf("Received id = %d \n ", r.id);
-// 			
-// 		}
-// 		
-// 		else {
-// 			printf("No new message\n");
-// 		}
-// 		
-// 		printf("\n");
+		menu_update();
+		game_run();
 
-		joystick_pos_t pos = joystick_read();
-		joystick_message.length = 2;
-		joystick_message.data[0] = pos.x;
-		joystick_message.data[1] = pos.y;
-		joystick_message.id = CAN_SENDT_JOYSTICK_POS;
-		
-		can_transmit(joystick_message);
-		printf("Sent message id = %d  | ", joystick_message.id);
-		printf("Joystick pos: x=%d, y=%d | \n", pos.x, pos.y);
-		
-		_delay_ms(20);
 		
 	}
 	

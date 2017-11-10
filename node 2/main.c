@@ -37,33 +37,35 @@ int main(void)
 
 	servo_set_pos(128);
 	
+	
 	while(1){
 		
-
+	if(can_message_available()){
+		printf("CAN message avilable \n");
+		can_recive(&r);
+		//printf("Received id = %d | ", r.id);
+		//printf("Joystick pos = %d \n", (int8_t)r.data[0]);
+		servo_set_pos(r.data[1]);
 		
-	// // 		if(can_message_available()){
-		if(1){
-			can_recive(&r);
-			//printf("Received id = %d | ", r.id);
-			//printf("Joystick pos = %d \n", (int8_t)r.data[0]);
-			servo_set_pos((int8_t)r.data[1] + 128);
-			
-			int8_t xpos = (int8_t)r.data[0];
-			
-			printf("xpos = %d\n", xpos);
-			motor_enable(1);
-			
-			
-			motor_set_pos(xpos);
-
+		//int8_t xpos = (int8_t)r.data[0];
+		int8_t xpos = (int8_t)r.data[2] + 128;
+		
+		//printf("xpos = %d\n", xpos);
+		motor_enable(1);
+		uint8_t button=r.data[3];
+		if (button )
+		{
+			board_solenoid_trigger() ;
 		}
 		
-		//printf("Motor encoder = %d\n", motor_get_encoder());
-		//motor_get_encoder();
 		
-		printf("Error = %d | Errorsum = %d | Curr pos = %d | Setpoint = %d | Output = %d\n", motor_pid_error, motor_pid_errorsum, motor_pid_curr_pos, motor_pid_setpoint, motor_pid_output);	
+		motor_set_pos(xpos);
+	}
 		
-		_delay_ms(20);
+	
+			
+
+		
 		
 		
 		

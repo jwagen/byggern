@@ -8,6 +8,8 @@ button.c
 
 can.c
 
+game.c
+
 joystick.c
 
 main.c
