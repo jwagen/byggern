@@ -22,6 +22,9 @@ extern volatile int16_t motor_pid_output;
 
 void motor_init();
 
+//Update the pid parameters, should be ran inside interrupt
+void motor_update_pid();
+
 void motor_enable(uint8_t enable);
 
 void motor_set_speed(uint8_t);

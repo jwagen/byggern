@@ -88,7 +88,7 @@ void can_recive(can_message_t *message){
 	mcp2515_bit_modify(CANINTF, 0x01, 0x00);
 	//printf("Can interrupt flags = %02x | ", mcp2515_read(CANINTF));
 	can_message_available_var = 0;	
-/*	return message;*/
+
 	
 	
 }

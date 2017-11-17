@@ -9,13 +9,16 @@
 #ifndef BOARD_H_
 #define BOARD_H_
 
+#include <stdint.h>
+
 void board_init();
 
+void board_update_ball_status();
 //Returns one if ball is down
 uint8_t board_get_ball_status();
 
 
-	void board_solenoid_trigger() ;
+void board_solenoid_trigger() ;
 
 
 

@@ -29,11 +29,17 @@ void oled_goto_column(uint8_t column);
 void oled_clear_line(uint8_t line);
 void oled_clear(void);
 
+void oled_inverted(uint8_t inv);
+
 void oled_pos(uint8_t column, uint8_t row);
 
 uint8_t oled_puts(char c, FILE* stream);
 void oled_print(char* string);
 
+void oled_display_bitmap(const unsigned char*);
 
+uint8_t oled_reverse_bits(uint8_t);
+void oled_display_buffer();
+void oled_write_buffer(uint8_t);
 
 #endif /* OLED_H_ */

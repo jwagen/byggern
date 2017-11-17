@@ -18,6 +18,7 @@ static uint8_t can_message_available_var = 0;
 
 ISR(INT1_vect){
 	can_message_available_var = 1;
+	//printf("New message\n");
 }
 
 uint8_t can_message_available(){
@@ -29,8 +30,9 @@ void can_init(){
 	mcp2515_reset();
 	
 	
-	//Enable interrupt on received message in both buffers
-	mcp2515_write(CANINTE, (1 <<RX1IE) | (1<<RX0IE));
+	//Enable interrupt on received message in buffer 0
+	mcp2515_write(CANINTE, RX1IE | RX0IE);
+
 	
 // 	Receive every message, no filter
 // 		mcp2515_write(RXB0CTRL, RXB_RXM1 | RXB_RXM0);
@@ -62,6 +64,8 @@ void can_transmit(can_message_t message){
 	//Send request to send
 	mcp2515_rts(1);
 	
+	//printf("CANINTF in transmit = %d \n", mcp2515_read(CANINTF)); 
+	
 }
 
 void can_recive(can_message_t *message){
@@ -80,6 +84,7 @@ void can_recive(can_message_t *message){
 	
 	//Clear interrupt flags
 	mcp2515_write(CANINTF, 0x00);
+/*	printf("CANINTF = %d /n", mcp2515_read(CANINTF));*/
 	can_message_available_var = 0;	
 /*	return message;*/
 	

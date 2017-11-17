@@ -12,6 +12,7 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <stdlib.h>
 
 #include "uart.h"
 #include "sram.h"
@@ -27,6 +28,8 @@
 #include "mcp2515.h"
 #include "mcp2515_registers.h"
 #include "game.h"
+#include "bitmaps.h"
+
 
 
 
@@ -41,18 +44,27 @@ int main(void)
 	uart_init();
 	can_init();
 	joystick_init();
+	game_init();
 	
 	//Enable interrupts
 	sei();
 
 
 	printf("Init done\n");
+	//sram_test();
+	oled_display_bitmap(bitmap_test);
+	_delay_ms(1000);
 
 	while(1){
 
 		menu_update();
 		game_run();
-
+		
+		//_delay_ms(100);
+		oled_display_buffer();
+		
+		//_delay_ms(100);
+		
 		
 	}
 	

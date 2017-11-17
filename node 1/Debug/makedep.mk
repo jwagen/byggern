@@ -4,6 +4,8 @@
 
 adc.c
 
+bitmaps.c
+
 button.c
 
 can.c

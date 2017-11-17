@@ -17,6 +17,9 @@
 #include <avr/pgmspace.h>
 
 
+uint8_t menu_control_input_disabled = 0;
+uint8_t menu_changed = 1;
+
 static Menu *currentMenu = &MenuMain;
 
 void test(void){
@@ -33,18 +36,22 @@ Menu MenuMain = {
 		&MenuSettings
 	},
 	.parrent = NULL,
-	.function = NULL
+	.enter_function = NULL,
+	.exit_function = NULL
 };
 
 Menu MenuSettings = {
 	.header = "Settings",
 	.selected = 0,
-	.number_of_items = 1,
+	.number_of_items = 3,
 	.parrent = &MenuMain,
 	.items = {
-		&MenuDiffeculty
+		&MenuControlInput,
+		&MenuDiffeculty,
+		&MenuTopScoreClear
 	},
-	.function = NULL
+	.enter_function = NULL,
+	.exit_function = NULL
 
 };
 
@@ -52,8 +59,38 @@ Menu MenuSettings = {
 	 .header = "Difficulty",
 	 .parrent = &MenuSettings,
 	 .number_of_items = 0,
-	 .function = NULL
+	 .enter_function = NULL,
+	 .exit_function = NULL
  };
+ 
+Menu MenuControlInput = {
+	.header = "Change controls",
+	.parrent = &MenuSettings,
+	.number_of_items = 2,
+	.items = {
+		&MenuControlJoystick,
+		&MenuControlSlider
+	},
+	.enter_function = NULL,
+	.exit_function = NULL
+};
+
+Menu MenuControlSlider = {
+	.header = "Slider",
+	.parrent = &MenuControlInput,
+	.number_of_items = 0,
+	.enter_function = &game_control_set_slider,
+	.exit_function = NULL
+};
+
+Menu MenuControlJoystick = {
+	.header = "Board joystick",
+	.parrent = &MenuControlInput,
+	.number_of_items = 0,
+	.enter_function = &game_control_set_joystick,
+	.exit_function = NULL
+};
+ 
  Menu MenuNewGame = {
 	 .header = "New game",
 	 .parrent = &MenuMain,
@@ -62,114 +99,163 @@ Menu MenuSettings = {
 		 &MenuStartGame,
 		 &MenuStopGame,
 	 },
-	 .function = NULL
+	 .enter_function = NULL,
+	 .exit_function = NULL
 
  };
+ 
+Menu MenuTopScoreClear = {
+	.header = "Clear top score",
+	.parrent = &MenuSettings,
+	.number_of_items = 0,
+	.enter_function = &game_top_score_clear,
+	.exit_function = NULL
+};
  
 Menu MenuStartGame = {
 	  .header = "Start new game",
 	  .parrent = &MenuMain,
 	  .number_of_items = 0,
-	  .function = &game_start
+	  .enter_function = &game_start,
+	  .exit_function = &game_stop
 };
 Menu MenuStopGame = {
 	.header = "Stop the game",
 	.parrent = &MenuMain,
 	.number_of_items = 0,
-	.function = &game_stop
+	.enter_function = &game_stop,
+	.exit_function = &game_stop
 };
  Menu MenuTopScore = {
 	 .header = "Top score",
 	 .parrent = &MenuMain,
 	 .number_of_items = 0,
-	 .function = NULL
+	 .enter_function = &game_display_top_score,
+	 .exit_function = NULL
  };
+ 
+
 
 
 //Displays the a menu struct
 uint8_t menu_display(Menu *menu){
-	oled_pos(12, 0);
-
-	fprintf(&oled_str, "%-15s", menu->header);
-	for(uint8_t i = 0; i < 7; i++){
-		oled_pos(12, i+1);
-		if(i < menu->number_of_items){
-			fprintf(&oled_str, "%-15s", menu->items[i]->header);
-		}
-		else{
-			fprintf(&oled_str,"          ");
-			//oled_clear_line(i);
-		}
-		
-		oled_pos(0, i);
-		
-		if (menu->number_of_items > 0 && menu->selected +1 == i){
-			oled_pos(0, menu->selected +1);
-			fprintf(&oled_str, "*");
-		}
-		else{
-			fprintf(&oled_str, " ");
-		}
+	
+	//Don't display a menu for menus that call functions
+	//These functions are responsible for drawing to the screen them selfs
+	if (menu->enter_function != NULL){
+		return 0;
 	}
+	
+	oled_pos(0, 0);
 
+	fprintf(&oled_str, "%-16s", menu->header);
+	for(uint8_t i = 0; i < 7; i++){
+		oled_pos(0, i+1);
+		if(i < menu->number_of_items){
+			if (i == menu->selected){
+				oled_inverted(1);
+			}
+			else{
+				oled_inverted(0);
+			}
+			
+			fprintf(&oled_str, "%-16s", menu->items[i]->header);
+		}
+		else{
+			oled_inverted(0);
+			printf("Cleared line %i", i+1);
+		}
+		
+	}
+	oled_inverted(0);
 	return 0;
 }
 
 void menu_update(){
 
-	
-	
-	void (*function_temp)() = NULL;
+	//Do nothing if the controll inputs are disabled
+	if (!menu_control_input_disabled)
+	{
+		void (*enter_function_temp)() = NULL;
+		void (*exit_function_temp)() = NULL;
 
-	if(joystick_read_direction() == UP){
-		if(0 < currentMenu->selected ){
-			currentMenu->selected--;
-		}
+		if(joystick_read_direction() == UP){
+			if(0 < currentMenu->selected ){
+				currentMenu->selected--;
+			}
+			menu_changed = 1;
 			
-	}
-		
-	else if(joystick_read_direction() == DOWN){
-		if(currentMenu->number_of_items > currentMenu->selected +1){
-			currentMenu->selected++;
 		}
-	}
 		
-	else if(joystick_read_direction() == RIGHT){
-		if(currentMenu->items[currentMenu->selected] != NULL){
-			currentMenu = currentMenu->items[currentMenu->selected];
-			//Clear line if menu is updated
-			oled_clear();
+		else if(joystick_read_direction() == DOWN){
+			if(currentMenu->number_of_items > currentMenu->selected +1){
+				currentMenu->selected++;
+			}
+			menu_changed = 1;
 		}
-		function_temp = currentMenu->function;
+		
+		else if(joystick_read_direction() == RIGHT){
+			if(currentMenu->items[currentMenu->selected] != NULL){
+				currentMenu = currentMenu->items[currentMenu->selected];
+				//Clear line if menu is updated
+				oled_clear();
+			}
+			enter_function_temp = currentMenu->enter_function;
+			menu_changed = 1;
 			
 
-	}
-		
-	else if(joystick_read_direction() == LEFT){
-		if(currentMenu->parrent != NULL){
-			currentMenu = currentMenu->parrent;
-			//Clear line if menu is updated
-			oled_clear();
 		}
+		
+		else if(joystick_read_direction() == LEFT){
+			//Run on exit menu, normaly used for cleanup functions
+			exit_function_temp = currentMenu->exit_function;
+			if(exit_function_temp != NULL){
+				exit_function_temp();
+			}
+		
+			if(currentMenu->parrent != NULL){
+				currentMenu = currentMenu->parrent;
+				//Clear line if menu is updated
+				oled_clear();
+			}
+			menu_changed = 1;
 			
-	}
+		}
 		
-	//Run function associated with menu if it exists and button is pressed
-	if(function_temp != NULL){
-		function_temp();
-	}
-	else {
-		menu_display(currentMenu);
-	}
+		//Run function associated with menu if it exists and button is pressed
+		if(enter_function_temp != NULL){
+			enter_function_temp();
+		}
+		if(menu_changed) {
+			menu_display(currentMenu);
+			menu_changed = 0;
+		}
+	
 		
-	//Wait for joystick to be in neutral
-	while(joystick_read_direction() != NEUTRAL);
-	_delay_ms(20);
+		//Wait for joystick to be in neutral
+		while(joystick_read_direction() != NEUTRAL);
+		_delay_ms(20);
 
-	
-	
-	
+	}
 
+}
 
+void menu_goto_parrent(){
+	if(currentMenu->parrent != NULL){
+		currentMenu = currentMenu->parrent;
+		//Clear line if menu is updated
+		oled_clear();
+	}
+}
+
+//Make menu handler ignore button inputs
+//Has to be re enabled for the menu to work again
+void menu_control_disable(){
+	menu_control_input_disabled = 1;
+}
+
+//Activates button inputs for menu handler
+void menu_control_enable(){
+	menu_control_input_disabled = 0;
 }
 

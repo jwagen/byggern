@@ -43,19 +43,19 @@ button_states_t button_read_state(buttons_t button){
 	static button_states_t current_state[BUTTON_NUMBER];
 	uint8_t reading = button_read(button);
 	
-	if(reading && current_state[button] == LOW){
+	if(reading && (current_state[button] == LOW || current_state[button] == FALLING)){
 		current_state[button] = RISING;
 	}
 	
-	else if(reading && current_state[button] == HIGH){
+	else if(reading && (current_state[button] == HIGH || current_state[button] == RISING)){
 		current_state[button] = HIGH;
 	}
 	
-	else if(!reading && current_state[button] == HIGH){
+	else if((!reading) && (current_state[button] == HIGH || current_state[button] == RISING)){
 		current_state[button] = FALLING;
 	}
 	
-	else if(!reading && current_state[button] == LOW){
+	else if((!reading) && (current_state[button] == LOW || current_state[button] == FALLING)){
 		current_state[button] = LOW;
 	}
 	

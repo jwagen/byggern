@@ -27,6 +27,7 @@ int main(void)
 	servo_init();
 	board_init();
 	motor_init();
+	board_init();
 
 	sei();
 
@@ -37,15 +38,15 @@ int main(void)
 
 	servo_set_pos(128);
 	
-	
+	uint8_t previous_ball_status = 0;
 	while(1){
 		
 	if(can_message_available()){
-		printf("CAN message avilable \n");
+		//printf("CAN message available \n");
 		can_recive(&r);
 		//printf("Received id = %d | ", r.id);
 		//printf("Joystick pos = %d \n", (int8_t)r.data[0]);
-		servo_set_pos(r.data[1]);
+		servo_set_pos(255 - r.data[1]);
 		
 		//int8_t xpos = (int8_t)r.data[0];
 		int8_t xpos = (int8_t)r.data[2] + 128;
@@ -61,6 +62,30 @@ int main(void)
 		
 		motor_set_pos(xpos);
 	}
+	
+	//Send a can message if the ball goes down, but only sends it once.
+	//printf("Ball status = %d \n", board_get_ball_status());
+	//printf("Previous ball status = %d \n", board_get_ball_status());
+	if (board_get_ball_status() != 0){
+		
+		
+		if(previous_ball_status == 0){
+			can_message_t ball_status = {
+				.id = CAN_SENDT_BALL_DOWN,
+				.length = 0
+			};
+			
+			can_transmit(ball_status);
+			previous_ball_status = 1;
+		}
+		
+	}
+	
+	else {
+		previous_ball_status = 0;
+	}
+	
+	
 		
 	
 			

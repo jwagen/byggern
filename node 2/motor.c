@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include <avr/interrupt.h>
+//#include <avr/interrupt.h>
 
 #include <stdio.h>
 
@@ -43,55 +43,56 @@ volatile int16_t motor_pid_error = 0;
 
 volatile int16_t motor_pid_output = 0;
 
-//Runs every 20ms. Uses same timer as the servo
-ISR(TIMER1_OVF_vect){
+
+
+inline void motor_update_pid(){
 	// Range form about -4000 to +4000
 	//Negative is left side of board. Encoder counts the other way.
 	motor_pid_curr_pos += -motor_get_encoder();
-	
+		
 	//Limit values to allowable range
 	if(motor_pid_curr_pos < - MOTOR_POS_MAX){
 		motor_pid_curr_pos = - MOTOR_POS_MAX;
 	}
-	
+		
 	else if(motor_pid_curr_pos > MOTOR_POS_MAX){
 		motor_pid_curr_pos = MOTOR_POS_MAX;
 	}
-	
+		
 	motor_pid_error = motor_pid_setpoint - motor_pid_curr_pos;
-	
+		
 	//Reduce gain on the I by a factor of 32
 	motor_pid_errorsum += (motor_pid_error / 32);
-	
+		
 	//Limit values to allowable range
 	if(motor_pid_errorsum < - MOTOR_POS_MAX ){
 		motor_pid_curr_pos = - MOTOR_POS_MAX;
 	}
-	
+		
 	else if(motor_pid_errorsum > MOTOR_POS_MAX){
 		motor_pid_errorsum = MOTOR_POS_MAX;
 	}
-	
-	motor_pid_output = (motor_pid_kp * motor_pid_error) + (motor_pid_ki * motor_pid_errorsum);
-	
-	motor_pid_output = motor_pid_output / 64;
-	
-	
-	
-	if(motor_pid_output < 0){
- 		motor_set_direction(0);
-		 //Invert output so it is always positive
-		 motor_pid_output = -motor_pid_output;
-		 
-		 //Limit output to max adc output
-		 if (motor_pid_output >  255){
-			 motor_pid_output = 255;
-		 }
-		uint16_t output = motor_pid_output; 
-		motor_set_speed(output);
 		
+	motor_pid_output = (motor_pid_kp * motor_pid_error) + (motor_pid_ki * motor_pid_errorsum);
+		
+	motor_pid_output = motor_pid_output / 64;
+		
+		
+		
+	if(motor_pid_output < 0){
+		motor_set_direction(0);
+		//Invert output so it is always positive
+		motor_pid_output = -motor_pid_output;
+			
+		//Limit output to max adc output
+		if (motor_pid_output >  255){
+			motor_pid_output = 255;
+		}
+		uint16_t output = motor_pid_output;
+		motor_set_speed(output);
+			
 	}
-	
+		
 	else {
 		motor_set_direction(1);
 		//Limit output to max adc output
@@ -102,7 +103,6 @@ ISR(TIMER1_OVF_vect){
 		motor_set_speed(output);
 	}
 
-		
 }
 
 void motor_init(){
