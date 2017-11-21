@@ -44,7 +44,9 @@ volatile int16_t motor_pid_error = 0;
 volatile int16_t motor_pid_output = 0;
 
 
-
+//Updates the pid controller
+//This function is ran every 20 ms.
+//The wole function uses only 16 bit numbers, no floats are used as they are very slow an avr.
 inline void motor_update_pid(){
 	// Range form about -4000 to +4000
 	//Negative is left side of board. Encoder counts the other way.
@@ -58,10 +60,12 @@ inline void motor_update_pid(){
 	else if(motor_pid_curr_pos > MOTOR_POS_MAX){
 		motor_pid_curr_pos = MOTOR_POS_MAX;
 	}
-		
+	
+	//Calculate error	
 	motor_pid_error = motor_pid_setpoint - motor_pid_curr_pos;
 		
 	//Reduce gain on the I by a factor of 32
+	//This should be moved to a define or variable to avoid magic numbers
 	motor_pid_errorsum += (motor_pid_error / 32);
 		
 	//Limit values to allowable range
@@ -72,13 +76,15 @@ inline void motor_update_pid(){
 	else if(motor_pid_errorsum > MOTOR_POS_MAX){
 		motor_pid_errorsum = MOTOR_POS_MAX;
 	}
-		
+	
+	//Actual bid controller	
 	motor_pid_output = (motor_pid_kp * motor_pid_error) + (motor_pid_ki * motor_pid_errorsum);
-		
+	
+	//Reduce the pid output, so it wil fit into 8 bit motor output ariable	
 	motor_pid_output = motor_pid_output / 64;
 		
 		
-		
+	//Set the motor speed and direction	
 	if(motor_pid_output < 0){
 		motor_set_direction(0);
 		//Invert output so it is always positive
@@ -105,6 +111,7 @@ inline void motor_update_pid(){
 
 }
 
+//initialize all the inputs needed for motor control
 void motor_init(){
 	//Set EN and DIR as outputs
 	MOTOR_CONTROLL_DDR |= (1<<MOTOR_EN_PIN) | (1<<MOTOR_DIR_PIN) | (1<<MOTOR_OE_PIN) | (1<<MOTOR_SEL_PIN) | (1<<MOTOR_RST_PIN);
@@ -126,6 +133,7 @@ void motor_init(){
 
 }
 
+//Turn the motor on
 void motor_enable(uint8_t enable){
 		if(enable){
 			MOTOR_CONTROLL_PORT |= (1<<MOTOR_EN_PIN);
@@ -136,10 +144,12 @@ void motor_enable(uint8_t enable){
 		}
 }
 
+//Set the motor speed
 void motor_set_speed(uint8_t speed){
 	dac_write(0, speed);
 }
 
+//Set the motor direction
 void motor_set_direction(uint8_t direction){
 	if(direction != 0){
 		MOTOR_CONTROLL_PORT |= (1<<MOTOR_DIR_PIN);
@@ -151,7 +161,8 @@ void motor_set_direction(uint8_t direction){
 }
 
 
-
+//Read encoder value from motor box
+//The sequence is from the assignment text.
 int16_t motor_get_encoder(void){
 	int16_t encoder = 0;
 	//Enable output form motor box
@@ -183,6 +194,7 @@ int16_t motor_get_encoder(void){
 	
 }
 
+//Set the setpoint of the motor
 void motor_set_pos(int8_t pos){
 	motor_pid_setpoint = pos * 32;
 }
